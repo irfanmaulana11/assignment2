@@ -1,20 +1,26 @@
 package main
 
 import (
+	"assignment2/service"
 	"fmt"
 )
 
 func main() {
-	PrintName()
+	var db []*service.User
+	userSvc := service.NewUserService(db)
+	names := []string{"Irfan", "Aulia", "Giva", "Fahmi", "Yusuf", "Taslim", "Burok"}
+	for _, n := range names {
+		res := userSvc.Register(&service.User{Name: n})
+		fmt.Println(res)
+	}
+
+	resGet := userSvc.GetUser()
+	fmt.Println("-----------Hasil get user-------------")
+	for _, v := range resGet {
+		cetakNama(v.Name)
+	}
 }
 
-// PrintName ...
-func PrintName() {
-	var names1 = []string{"irfan", "Aulia", "San", "Wicak", "Iqbal"}
-	var names2 = []string{"Giva", "Fahmi", "Rizki", "Billy", "Fajar"}
-	names1 = append(names1, names2...)
-
-	for _, n := range names1 {
-		fmt.Println(n)
-	}
+func cetakNama(nama string) {
+	fmt.Println(nama)
 }
