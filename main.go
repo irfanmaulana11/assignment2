@@ -1,41 +1,26 @@
 package main
 
 import (
-	"assignment2/service"
 	"fmt"
-	"sync"
+	"os"
+
+	"assignment2/lib"
+
+	"assignment2/routes"
+
+	"github.com/joho/godotenv"
 )
 
+func init() {
+	if err := godotenv.Load(); err != nil {
+		os.Exit(1)
+	}
+}
+
 func main() {
-	var db []*service.User
-	userSvc := service.NewUserService(db)
-	names := []string{"Irfan", "Aulia", "Giva", "Fahmi", "Yusuf", "Taslim", "Burok"}
+	lib.InitDatabase()
 
-	var wg1 sync.WaitGroup
-	wg1.Add(len(names))
-
-	for _, n := range names {
-		go RegisterUser(n, userSvc, &wg1)
-	}
-	wg1.Wait()
-
-	resGet := userSvc.GetUser()
-	fmt.Println("-----------Hasil get user-------------")
-	var wg sync.WaitGroup
-	wg.Add(len(resGet))
-	for _, v := range resGet {
-		go cetakNama(&wg, v.Name)
-	}
-	wg.Wait()
-}
-
-func cetakNama(wg *sync.WaitGroup, nama string) {
-	fmt.Println(nama)
-	wg.Done()
-}
-
-func RegisterUser(name string, svc service.UserInterface, wg *sync.WaitGroup) {
-	res := svc.Register(&service.User{Name: name})
-	fmt.Println(res)
-	wg.Done()
+	port := fmt.Sprintf(":%s", os.Getenv("APP_PORT"))
+	r := routes.CreateRouter()
+	r.Run(port)
 }
